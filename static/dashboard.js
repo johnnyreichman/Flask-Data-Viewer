@@ -1,8 +1,8 @@
 var $currentNavPage = $("#home");
 
 function FindCandidateForParty(candidates,party){
-  var match = ""
-  candidates.forEach((candidate)=>
+  var match = "";
+  candidates.forEach((candidate) =>
   {
     if(candidate.Party === party){
       if(match === "" || match.VotesRecieved < candidate.VotesRecieved){
@@ -16,8 +16,8 @@ function FindCandidateForParty(candidates,party){
 function BuildLineGraph(elections){
   var ctx = document.getElementById("myChart");
   var dates = [];
-  var democratPercents = []
-  var republicanPercents = []
+  var democratPercents = [];
+  var republicanPercents = [];
   var candidateHoverDict = {};
   elections.forEach((election) =>
     {
