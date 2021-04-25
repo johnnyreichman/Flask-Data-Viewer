@@ -194,6 +194,20 @@ def AddCSVToPresidentTable():
     con.commit()
     con.close()
 
+def GetPopularCandidateData():
+    conn = sqlite3.connect('VotingPatterns.db')
+    cur = conn.cursor()
+    cur.execute("select COUNT(*), CANDIDATE FROM SENATE WHERE CANDIDATE_VOTES > (TOTAL_VOTES / 2) GROUP BY CANDIDATE HAVING COUNT(CANDIDATE) < 2\
+        UNION select COUNT(*), CANDIDATE FROM HOUSE WHERE CANDIDATE_VOTES > (TOTAL_VOTES / 2) GROUP BY CANDIDATE HAVING COUNT(CANDIDATE) < 2")
+    oneTerm = len(cur.fetchall())
+    cur.execute("select COUNT(*), CANDIDATE FROM SENATE WHERE CANDIDATE_VOTES > (TOTAL_VOTES / 2) GROUP BY CANDIDATE HAVING COUNT(CANDIDATE) = 2\
+        UNION select COUNT(*), CANDIDATE FROM HOUSE WHERE CANDIDATE_VOTES > (TOTAL_VOTES / 2) GROUP BY CANDIDATE HAVING COUNT(CANDIDATE) =2")
+    twoTerm = len(cur.fetchall())
+    cur.execute("select COUNT(*), CANDIDATE FROM SENATE WHERE CANDIDATE_VOTES > (TOTAL_VOTES / 2) GROUP BY CANDIDATE HAVING COUNT(CANDIDATE) > 2\
+        UNION select COUNT(*), CANDIDATE FROM HOUSE WHERE CANDIDATE_VOTES > (TOTAL_VOTES / 2) GROUP BY CANDIDATE HAVING COUNT(CANDIDATE) > 2")
+    manyTerm = len(cur.fetchall())
+    return oneTerm,twoTerm,manyTerm
+
 if __name__ == '__main__':
     #start all of out thingies
-    AddCSVToPresidentTable()
+    GetPopularCandidateData()

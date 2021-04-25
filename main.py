@@ -15,7 +15,7 @@ def ChangeOverTime():
     race = request.args['race']
     district = request.args['district']
     elections = StorageService.GetElectionsOverTime(state.upper(),race.upper(),district)
-    Templatehtml = render_template('overtime.html', hiVar= "johnny")
+    Templatehtml = render_template('interactive.html', hiVar= "johnny")
     return flask.jsonify({"html": Templatehtml, "elections": elections })
 
 @app.route('/ChangeState', methods=["GET", "POST"])
@@ -24,7 +24,7 @@ def ChangeState():
     race = request.args['race']
     district = request.args['district']
     elections = StorageService.GetElectionsOverTime(state.upper(),race.upper(),district)
-    Templatehtml = render_template('overtimegraph.html', hiVar= "johnny")
+    Templatehtml = render_template('interactivegraph.html', hiVar= "johnny")
     return flask.jsonify({"html": Templatehtml, "elections": elections })
 
 
@@ -33,8 +33,9 @@ def hello():
 
 @app.route('/Dashboard', methods=["GET"])
 def LoadDashboard():
+    pieData = StorageService.GetPopularCandidateData()
     templateHtml = render_template('dashboard.html')
-    return flask.jsonify({"html": templateHtml})
+    return flask.jsonify({"html": templateHtml, "pieData": pieData})
 
 @app.route('/Home', methods=["GET"])
 def GoHome():
