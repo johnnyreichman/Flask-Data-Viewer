@@ -17,10 +17,20 @@ def convertElectionToDict(election):
     return electionDict
 
 
-def GetSenateOverTime(state):
+def GetElectionsOverTime(state,race,district):
     conn = sqlite3.connect('VotingPatterns.db')
     cur = conn.cursor()
-    cur.execute("SELECT YEAR,CANDIDATE,PARTY_SIMPLE,TOTAL_VOTES,CANDIDATE_VOTES FROM SENATE WHERE STATE_ABB=?", (state,))
+    command = ""
+    if race == "SENATE":
+        command = "SELECT YEAR,CANDIDATE,PARTY_SIMPLE,TOTAL_VOTES,CANDIDATE_VOTES FROM SENATE WHERE STATE_ABB=?"
+    elif race == "HOUSE":
+        command = "SELECT YEAR,CANDIDATE,PARTY,TOTAL_VOTES,CANDIDATE_VOTES FROM HOUSE WHERE STATE_ABB=? AND DISTRICT=?"
+    else:
+        command = "SELECT YEAR,CANDIDATE,PARTY_SIMPLE,TOTAL_VOTES,CANDIDATE_VOTES FROM PRESIDENT WHERE STATE_ABB=?"
+    if race == "HOUSE":
+        cur.execute(command, (state,district))
+    else:
+        cur.execute(command, (state,))
     stateElections = []
     electionToAdd = None
     for row in cur:

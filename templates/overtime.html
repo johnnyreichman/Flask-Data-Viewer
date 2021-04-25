@@ -2,16 +2,12 @@
 <html lang="en" dir="ltr">
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-  <h1 class="h2">Dashboard</h1>
-    <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
-      {{hiVar}}
-    </button>
+  <h1 class="h2">State Elections Over Time</h1>
   </div>
 <div class="form-group">
 	<label for="state" class="col-sm-2 control-label">State</label>
 	<div class="col-sm-10">
 		<select class="form-control" id="state-select">
-			<option value="">N/A</option>
 			<option value="AK">Alaska</option>
 			<option value="AL">Alabama</option>
 			<option value="AR">Arkansas</option>
@@ -64,6 +60,27 @@
 			<option value="WI">Wisconsin</option>
 			<option value="WV">West Virginia</option>
 			<option value="WY">Wyoming</option>
+		</select>
+	</div>
+</div>
+<div class="form-group">
+	<label for="state" class="col-sm-2 control-label">Type of Election</label>
+	<div class="col-sm-10">
+		<select class="form-control" id="race-select">
+			<option value="senate">Senate</option>
+			<option value="house">House</option>
+			<option value="president">Presidential</option>
+
+		</select>
+	</div>
+</div>
+<div id="district-select-container" class="form-group">
+	<label for="state" class="col-sm-2 control-label">District</label>
+	<div class="col-sm-10">
+		<select class="form-control" id="district-select">
+			<option value="1">1</option>
+			<option value="2">2</option>
+			<option value="3">3</option>
 		</select>
 	</div>
 </div>

@@ -87,20 +87,67 @@ $overTimeBtn.click(function() {
   $overTimeBtn.find(".nav-link").addClass("active");
   $.get("ChangeOverTime",
   {
-    state: "WI"
+    state: "AK",
+    race: "senate",
+    district: 1
   },
    function(data){
        $('#content').html($(data.html));
        BuildLineGraph(data.elections);
        var $stateSelect = $("#state-select");
+       var $raceSelect = $("#race-select");
+       var $districtSelectContainer = $("#district-select-container");
+       var $districtSelect = $("#district-select");
+       $districtSelectContainer.hide();
        $stateSelect.change(function() {
          $.get("ChangeState",
          {
-           state: $stateSelect.val()
+           state: $stateSelect.val(),
+           race: $raceSelect.val(),
+           district: $districtSelect.val()
          },
           function(data){
               $('#chart-container').html($(data.html));
               BuildLineGraph(data.elections);
+              if($raceSelect.val() === "house"){
+                $districtSelectContainer.show();
+              }
+          });
+       });
+       $raceSelect.change(function() {
+         $.get("ChangeState",
+         {
+           state: $stateSelect.val(),
+           race: $raceSelect.val(),
+           district: $districtSelect.val()
+         },
+          function(data){
+              $('#chart-container').html($(data.html));
+              BuildLineGraph(data.elections);
+              if($raceSelect.val() === "house"){
+                $districtSelectContainer.show();
+              }
+              else {
+                $districtSelectContainer.hide();
+              }
+          });
+       });
+       $districtSelect.change(function() {
+         $.get("ChangeState",
+         {
+           state: $stateSelect.val(),
+           race: $raceSelect.val(),
+           district: $districtSelect.val()
+         },
+          function(data){
+              $('#chart-container').html($(data.html));
+              BuildLineGraph(data.elections);
+              if($raceSelect.val() === "house"){
+                $districtSelectContainer.show();
+              }
+              else {
+                $districtSelectContainer.hide();
+              }
           });
        });
    });
@@ -111,6 +158,9 @@ $dashboardBtn.click(function() {
   $currentNavPage.find(".nav-link").removeClass("active");
   $currentNavPage = $dashboardBtn;
   $dashboardBtn.find(".nav-link").addClass("active");
+  $.get("Dashboard", function(data){
+      $('#content').html($(data.html));
+  });
 });
 
 var $homeBtn = $("#home");
@@ -118,4 +168,7 @@ $homeBtn.click(function() {
   $currentNavPage.find(".nav-link").removeClass("active");
   $currentNavPage = $homeBtn;
   $homeBtn.find(".nav-link").addClass("active");
+  $.get("/Home", function(data){
+      $('#content').html($(data.html));
+  });
 });
