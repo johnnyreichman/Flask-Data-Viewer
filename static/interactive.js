@@ -171,7 +171,7 @@ $dashboardBtn.click(function() {
   $.get("Dashboard", function(data){
       $('#content').html($(data.html));
       BuildPieChart(data.pieData);
-      BuildBarChart();
+      BuildBarChart(data.barData);
   });
 });
 

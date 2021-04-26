@@ -16,6 +16,12 @@ def convertElectionToDict(election):
     electionDict = {"year": election.Year, "TotalVotes": election.TotalVotes, "Candidates": candidatesList}
     return electionDict
 
+def convertTurnoutToDict(rawTurnout):
+    turnoutDict = {}
+    for row in rawTurnout:
+        turnoutDict[str(row[0])] = row[1]
+    return turnoutDict
+
 
 def GetElectionsOverTime(state,race,district):
     conn = sqlite3.connect('VotingPatterns.db')
@@ -208,6 +214,18 @@ def GetPopularCandidateData():
     manyTerm = len(cur.fetchall())
     return oneTerm,twoTerm,manyTerm
 
+def GetILTurnout():
+    conn = sqlite3.connect('VotingPatterns.db')
+    cur = conn.cursor()
+    cur.execute("select distinct YEAR, TOTAL_VOTES from SENATE where STATE_ABB='IL'group by YEAR")
+    senateTurnout = convertTurnoutToDict(cur.fetchall())
+    cur.execute("select distinct YEAR, SUM(CANDIDATE_VOTES) from HOUSE where STATE_ABB='IL'group by YEAR")
+    houseTurnout = convertTurnoutToDict(cur.fetchall())
+    cur.execute("select distinct YEAR, TOTAL_VOTES from PRESIDENT where STATE_ABB='IL'group by YEAR")
+    presTurnount = convertTurnoutToDict(cur.fetchall())
+    return senateTurnout,houseTurnout,presTurnount
+
+
 if __name__ == '__main__':
     #start all of out thingies
-    GetPopularCandidateData()
+    GetILTurnout()

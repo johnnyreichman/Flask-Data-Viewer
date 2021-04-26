@@ -34,8 +34,9 @@ def hello():
 @app.route('/Dashboard', methods=["GET"])
 def LoadDashboard():
     pieData = StorageService.GetPopularCandidateData()
+    barData = StorageService.GetILTurnout()
     templateHtml = render_template('dashboard.html')
-    return flask.jsonify({"html": templateHtml, "pieData": pieData})
+    return flask.jsonify({"html": templateHtml, "pieData": pieData, "barData": barData})
 
 @app.route('/Home', methods=["GET"])
 def GoHome():
