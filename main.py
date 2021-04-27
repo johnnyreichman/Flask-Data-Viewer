@@ -18,7 +18,7 @@ def ChangeOverTime():
     Templatehtml = render_template('interactive.html', hiVar= "johnny")
     return flask.jsonify({"html": Templatehtml, "elections": elections })
 
-@app.route('/ChangeState', methods=["GET", "POST"])
+@app.route('/UpdateGraph', methods=["GET", "POST"])
 def ChangeState():
     state = request.args['state']
     race = request.args['race']
@@ -26,10 +26,6 @@ def ChangeState():
     elections = StorageService.GetElectionsOverTime(state.upper(),race.upper(),district)
     Templatehtml = render_template('interactivegraph.html', hiVar= "johnny")
     return flask.jsonify({"html": Templatehtml, "elections": elections })
-
-
-def hello():
-    return render_template('dashboard.html')
 
 @app.route('/Dashboard', methods=["GET"])
 def LoadDashboard():
@@ -45,5 +41,5 @@ def GoHome():
 
 
 if __name__ == '__main__':
-    #start all of out thingies
+    #start the local server
     app.run(host='localhost', port=3000, debug=True)

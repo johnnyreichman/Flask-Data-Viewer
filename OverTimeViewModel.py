@@ -21,7 +21,6 @@ class Election:
 
 
 class State(object):
-    """docstring for State"""
     def __init__(self, name, elections):
         self.Name = name
         for electionYear in elections:

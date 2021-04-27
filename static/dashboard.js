@@ -1,3 +1,5 @@
+
+//Build the pie chart that compares what happens to popular congressional candidates
 function BuildPieChart(pieRawData) {
   var ctx = document.getElementById("pieChart");
   var pieChart = new Chart(ctx, {
@@ -42,6 +44,7 @@ const barChartOptions = {
   }
 };
 
+//Build the bar chart comparing presidential, house, and senate turnout over the years
 function BuildBarChart(barData) {
   var senateTurnout = [];
   var houseTurnout = [];

@@ -1,5 +1,6 @@
 var $currentNavPage = $("#home");
 
+//Find the most popular candidate in the election that belongs to specified party
 function FindCandidateForParty(candidates,party){
   var match = "";
   candidates.forEach((candidate) =>
@@ -13,6 +14,7 @@ function FindCandidateForParty(candidates,party){
   return match;
 }
 
+//Build the historical data line graph
 function BuildLineGraph(elections){
   var ctx = document.getElementById("lineChart");
   var dates = [];
@@ -89,7 +91,28 @@ function BuildLineGraph(elections){
   });
 }
 
-//Load the OverTime Data
+//Update the Line Graph after a state/race/district dropdown change
+function UpdateLineGraph(state, race, district, $districtSelectContainer)
+{
+  $.get("UpdateGraph",
+  {
+    state: state,
+    race: race,
+    district: district
+  },
+   function(data){
+       $('#chart-container').html($(data.html));
+       BuildLineGraph(data.elections);
+       if(race === "house"){
+         $districtSelectContainer.show();
+       }
+       else {
+         $districtSelectContainer.hide();
+       }
+   });
+}
+
+//Go to the Historical Data tab
 var $overTimeBtn = $("#change-over-time");
 $overTimeBtn.click(function() {
   $currentNavPage.find(".nav-link").removeClass("active");
@@ -109,60 +132,19 @@ $overTimeBtn.click(function() {
        var $districtSelectContainer = $("#district-select-container");
        var $districtSelect = $("#district-select");
        $districtSelectContainer.hide();
-       $stateSelect.change(function() {
-         $.get("ChangeState",
-         {
-           state: $stateSelect.val(),
-           race: $raceSelect.val(),
-           district: $districtSelect.val()
-         },
-          function(data){
-              $('#chart-container').html($(data.html));
-              BuildLineGraph(data.elections);
-              if($raceSelect.val() === "house"){
-                $districtSelectContainer.show();
-              }
-          });
+       $stateSelect.change(function () {
+         UpdateLineGraph($stateSelect.val(), $raceSelect.val(),$districtSelect.val(), $districtSelectContainer);
        });
        $raceSelect.change(function() {
-         $.get("ChangeState",
-         {
-           state: $stateSelect.val(),
-           race: $raceSelect.val(),
-           district: $districtSelect.val()
-         },
-          function(data){
-              $('#chart-container').html($(data.html));
-              BuildLineGraph(data.elections);
-              if($raceSelect.val() === "house"){
-                $districtSelectContainer.show();
-              }
-              else {
-                $districtSelectContainer.hide();
-              }
-          });
+         UpdateLineGraph($stateSelect.val(), $raceSelect.val(),$districtSelect.val(), $districtSelectContainer);
        });
        $districtSelect.change(function() {
-         $.get("ChangeState",
-         {
-           state: $stateSelect.val(),
-           race: $raceSelect.val(),
-           district: $districtSelect.val()
-         },
-          function(data){
-              $('#chart-container').html($(data.html));
-              BuildLineGraph(data.elections);
-              if($raceSelect.val() === "house"){
-                $districtSelectContainer.show();
-              }
-              else {
-                $districtSelectContainer.hide();
-              }
-          });
+         UpdateLineGraph($stateSelect.val(), $raceSelect.val(),$districtSelect.val(), $districtSelectContainer);
        });
    });
 });
 
+//Go to the Dashboard tab
 var $dashboardBtn = $("#dashboard");
 $dashboardBtn.click(function() {
   $currentNavPage.find(".nav-link").removeClass("active");
@@ -175,6 +157,7 @@ $dashboardBtn.click(function() {
   });
 });
 
+//Go back to the home tab
 var $homeBtn = $("#home");
 $homeBtn.click(function() {
   $currentNavPage.find(".nav-link").removeClass("active");
