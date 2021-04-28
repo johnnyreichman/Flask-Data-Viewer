@@ -1,5 +1,5 @@
 import sqlite3, csv
-from OverTimeViewModel import *
+from ElectionViewModel import *
 import codecs
 
 def convertElectionListToDictList(elections):

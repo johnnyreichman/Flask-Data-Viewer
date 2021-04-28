@@ -118,7 +118,7 @@ $overTimeBtn.click(function() {
   $currentNavPage.find(".nav-link").removeClass("active");
   $currentNavPage = $overTimeBtn;
   $overTimeBtn.find(".nav-link").addClass("active");
-  $.get("ChangeOverTime",
+  $.get("HistoricalData",
   {
     state: "AK",
     race: "senate",

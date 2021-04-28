@@ -9,7 +9,7 @@ app = flask.Flask(__name__)
 def hello():
     return render_template('index.html')
 
-@app.route('/ChangeOverTime', methods=["GET", "POST"])
+@app.route('/HistoricalData', methods=["GET", "POST"])
 def ChangeOverTime():
     state = request.args['state']
     race = request.args['race']
