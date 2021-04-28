@@ -22,7 +22,7 @@ def convertTurnoutToDict(rawTurnout):
         turnoutDict[str(row[0])] = row[1]
     return turnoutDict
 
-
+#Retrieves historical election data for the specified state, race, and district (if house race)
 def GetElectionsOverTime(state,race,district):
     conn = sqlite3.connect('VotingPatterns.db')
     cur = conn.cursor()
@@ -33,6 +33,7 @@ def GetElectionsOverTime(state,race,district):
         command = "SELECT YEAR,CANDIDATE,PARTY,TOTAL_VOTES,CANDIDATE_VOTES FROM HOUSE WHERE STATE_ABB=? AND DISTRICT=?"
     else:
         command = "SELECT YEAR,CANDIDATE,PARTY_SIMPLE,TOTAL_VOTES,CANDIDATE_VOTES FROM PRESIDENT WHERE STATE_ABB=?"
+
     if race == "HOUSE":
         cur.execute(command, (state,district))
     else:
@@ -51,20 +52,70 @@ def GetElectionsOverTime(state,race,district):
             electionToAdd.Candidates.append(Candidate(row[1], row[2],row[4]))
     return convertElectionListToDictList(stateElections)
 
+#Retrieves the number of Congresspeople who serve 1, 2, and 2+ terms
+#Note: this only retrieves the number of terms they serve in a particular assembly
+#      So if a candidate serves one term as a house member and one term as a senator, they are considered
+#      a one-term house member as well as a one-term senator.
 def GetPopularCandidateData():
     conn = sqlite3.connect('VotingPatterns.db')
     cur = conn.cursor()
-    cur.execute("select COUNT(*), CANDIDATE FROM SENATE WHERE CANDIDATE_VOTES > (TOTAL_VOTES / 2) GROUP BY CANDIDATE HAVING COUNT(CANDIDATE) < 2\
-        UNION select COUNT(*), CANDIDATE FROM HOUSE WHERE CANDIDATE_VOTES > (TOTAL_VOTES / 2) GROUP BY CANDIDATE HAVING COUNT(CANDIDATE) < 2")
+    cur.execute("SELECT candidate,COUNT(*) \
+	             FROM ( \
+                    SELECT year, state,candidate, MAX(candidate_votes) \
+                    FROM SENATE \
+                    GROUP BY year, state \
+                    ) AS subqueryone \
+                 GROUP BY subqueryone.candidate \
+                 HAVING COUNT(candidate) < 2 \
+                 UNION \
+                 SELECT candidate,COUNT(*) \
+                 FROM ( \
+                    SELECT year, state,candidate, MAX(candidate_votes) \
+                    FROM HOUSE \
+                    GROUP BY year, state \
+                    ) AS subquerytwo \
+                 GROUP BY subquerytwo.candidate \
+                 HAVING COUNT(candidate) < 2")
     oneTerm = len(cur.fetchall())
-    cur.execute("select COUNT(*), CANDIDATE FROM SENATE WHERE CANDIDATE_VOTES > (TOTAL_VOTES / 2) GROUP BY CANDIDATE HAVING COUNT(CANDIDATE) = 2\
-        UNION select COUNT(*), CANDIDATE FROM HOUSE WHERE CANDIDATE_VOTES > (TOTAL_VOTES / 2) GROUP BY CANDIDATE HAVING COUNT(CANDIDATE) =2")
-    twoTerm = len(cur.fetchall())
-    cur.execute("select COUNT(*), CANDIDATE FROM SENATE WHERE CANDIDATE_VOTES > (TOTAL_VOTES / 2) GROUP BY CANDIDATE HAVING COUNT(CANDIDATE) > 2\
-        UNION select COUNT(*), CANDIDATE FROM HOUSE WHERE CANDIDATE_VOTES > (TOTAL_VOTES / 2) GROUP BY CANDIDATE HAVING COUNT(CANDIDATE) > 2")
+    cur.execute("SELECT candidate,COUNT(*) \
+	             FROM ( \
+                    SELECT year, state,candidate, MAX(candidate_votes) \
+                    FROM SENATE \
+                    GROUP BY year, state \
+                    ) AS subqueryone \
+                 GROUP BY subqueryone.candidate \
+                 HAVING COUNT(candidate) = 2 \
+                 UNION \
+                 SELECT candidate,COUNT(*) \
+                 FROM ( \
+                    SELECT year, state,candidate, MAX(candidate_votes) \
+                    FROM HOUSE \
+                    GROUP BY year, state \
+                    ) AS subquerytwo \
+                 GROUP BY subquerytwo.candidate \
+                 HAVING COUNT(candidate) = 2")
+    twoTerm=len(cur.fetchall())
+    cur.execute("SELECT candidate,COUNT(*) \
+	             FROM ( \
+                    SELECT year, state,candidate, MAX(candidate_votes) \
+                    FROM SENATE \
+                    GROUP BY year, state \
+                    ) AS subqueryone \
+                 GROUP BY subqueryone.candidate \
+                 HAVING COUNT(candidate) > 2 \
+                 UNION \
+                 SELECT candidate,COUNT(*) \
+                 FROM ( \
+                    SELECT year, state,candidate, MAX(candidate_votes) \
+                    FROM HOUSE \
+                    GROUP BY year, state \
+                    ) AS subquerytwo \
+                 GROUP BY subquerytwo.candidate \
+                 HAVING COUNT(candidate) > 2")
     manyTerm = len(cur.fetchall())
     return oneTerm,twoTerm,manyTerm
 
+#Retrieves Illinois house, presidential, and senate turnout over the years
 def GetILTurnout():
     conn = sqlite3.connect('VotingPatterns.db')
     cur = conn.cursor()
